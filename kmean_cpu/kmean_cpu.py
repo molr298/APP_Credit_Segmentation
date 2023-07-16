@@ -20,7 +20,6 @@ print(np_data.shape)
 print("======================")
 
 k = 20
-cluster = np.zeros(np_data.shape[0])
 centroid = np_data[np.random.randint(np_data.shape[0], size=k), :]
 
 
