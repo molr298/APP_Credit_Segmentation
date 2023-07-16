@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
+import time
 
-df = pd.read_csv('../CC GENERAL.csv')
+df = pd.read_csv('data/CC GENERAL.csv')
 
 print(df.head())
 print("======================")
@@ -18,7 +19,7 @@ np_data = df.to_numpy()
 print(np_data.shape)
 print("======================")
 
-k = 7
+k = 20
 cluster = np.zeros(np_data.shape[0])
 centroid = np_data[np.random.randint(np_data.shape[0], size=k), :]
 
@@ -53,18 +54,28 @@ def get_new_centroids(data, data_nearest_centroid, number_of_centroid):
 
 iteration = 0
 has_changed_centroid = True
+total_time_start = time.perf_counter()
 while has_changed_centroid:
-    print(f"iter {iteration}")
+    iter_time_start = time.perf_counter()
+    calc_dist_time_start = time.perf_counter()
     calculated_dist = calc_distance(np_data, centroid)  # calculated dist
+    calc_dist_time_end = time.perf_counter()
+    nearest_centroid_time_start = time.perf_counter()
     nearest_centroid = get_nearest_centroid(calculated_dist)  # assigned to centroid
+    nearest_centroid_time_end = time.perf_counter()
     new_centroid = get_new_centroids(np_data, nearest_centroid, k)
     if np.all(new_centroid == centroid):
         has_changed_centroid = False
     else:
-        print(f"changed {np.linalg.norm(centroid - new_centroid)}")
+        # print(f"changed {np.linalg.norm(centroid - new_centroid)}")
         centroid = new_centroid
-        iteration += 1
-print("new centroids:")
-print(centroid)
-print("iteration took:")
-print(iteration)
+    iter_time_end = time.perf_counter()
+    print(
+        f"iter {iteration} | took: {iter_time_end - iter_time_start:0.4f} |"
+        f" dist: {calc_dist_time_end - calc_dist_time_start:0.4f} | "
+        f"nearest: {nearest_centroid_time_end - nearest_centroid_time_start:0.4f}")
+    iteration += 1
+total_time_end = time.perf_counter()
+# print("new centroids:")
+# print(centroid)
+print(f"k: {k} | iteration took: {iteration} | total time: {total_time_end - total_time_start:0.4f}")
